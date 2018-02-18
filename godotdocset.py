@@ -14,6 +14,8 @@ import os.path
 import sys
 import re
 from glob import glob
+import sqlite3
+import shutil
 
 def linkify_text(txt):
 	return re.sub(r'\[(.+?)\]', r'<a href="\1.html">\1</a>', txt)
@@ -102,33 +104,96 @@ class DocPage:
 			res.description = linkify_text(const.text.strip())
 			self.consts[ename].append(res)
 
+def getPlist(name):
+	return '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>{}</string>
+	<key>CFBundleName</key>
+	<string>{}</string>
+	<key>DocSetPlatformFamily</key>
+	<string>{}</string>
+	<key>isDashDocset</key>
+	<true/>
+	<key>DashDocSetFamily</key>
+	<string>dashtoc</string>
+</dict>
+</plist>
+'''.format(name.split('_')[0],
+		name.replace('_', ' '),
+		name.split('_')[0].lower())
+
+
+class DocsetMaker:
+	outname = "Godot"
+	rootdir = outname + '.docset'
+	docdir = rootdir + '/Contents/Resources/Documents'
+
+	def __enter__(self):
+		os.makedirs(self.docdir)
+		self.db = sqlite3.connect(DocsetMaker.outname + '.docset/Contents/Resources/docSet.dsidx')
+		self.db.execute('CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT);')
+		self.db.execute('CREATE UNIQUE INDEX anchor ON searchIndex (name, type, path);')
+		with open(DocsetMaker.outname + '.docset/Contents/Info.plist', 'w') as plist:
+			plist.write(getPlist(DocsetMaker.outname))
+		self.db.execute("BEGIN")
+		return self
+	
+	def __exit__(self, *oth):
+		self.db.commit()
+		self.db.close()
+	
+	def add_to_docset(self, dp: DocPage):
+		def add_entry(name, type):
+			self.db.execute('INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES (?,?,?);', [name, type, dp.title + ".html"])
+		add_entry(dp.title, "Class")
+		for e in dp.consts:
+			if e is None:
+				for x in dp.consts[None]:
+					add_entry(x.name, "Constant")
+			else:
+				add_entry(e, "Enum")
+				for x in dp.consts[e]:
+					add_entry(x.name, "Constant")
+		for e in dp.fields:
+			add_entry(e.name, "Field")
+		for e in dp.methods:
+			add_entry(e.name, "Method")
+		for e in dp.signals:
+			add_entry(e.name, "Subroutine")
+
 if __name__ == '__main__':
 	ap = argparse.ArgumentParser()
 	ap.add_argument('-f', '--from', help="folder or xml file", required=True)
-	ap.add_argument('-t', '--to', help="output folder", default='.')
+	# ap.add_argument('-t', '--to', help="output folder", default='.')
 	args = ap.parse_args()
 	frompath = args.__dict__['from']
-	def dump(content, name):
-		with open(os.path.join(args.to, name[:-4] + ".html"), 'w', encoding="utf-8") as f:
-			f.write(content)
 	
 	tpl = jinja2.Template(open('template.jinja2').read())
-	if not os.path.exists(frompath):
-		exit("File or directory " + frompath + " doesn't exist")
-	elif os.path.isfile(frompath):
-		doc = etree.parse(frompath)
-		dp = DocPage(doc.getroot())
-		render = tpl.render(vars(dp))
-		dump(render, os.path.basename(frompath))
-	else:
-		if not os.path.exists(args.to):
-			os.mkdir(args.to)
-		docpages = {}
-		for fname in glob(frompath + "/*.xml"):
-			doc = etree.parse(fname)
-			print("parsing", fname)
-			docpages[fname] = DocPage(doc.getroot())
+	if not os.path.exists(frompath) or not os.path.isdir(frompath):
+		exit("Directory " + frompath + " doesn't exist or is not a directory")
+	docsetdir = DocsetMaker.outname + ".docset"
+	if os.path.exists(docsetdir):
+		print("Removing docset dir")
+		shutil.rmtree(docsetdir)
+	# doc = etree.parse(frompath)
+	# dp = DocPage(doc.getroot())
+	# render = tpl.render(vars(dp))
+	# dump(render, os.path.basename(frompath))
+	docpages = {}
+	for fname in glob(frompath + "/*.xml"):
+		doc = etree.parse(fname)
+		print("parsing", fname)
+		docpages[fname] = DocPage(doc.getroot())
+	with DocsetMaker() as docset:
+		def dump(content, name):
+			with open(os.path.join(DocsetMaker.docdir, name[:-4] + ".html"), 'w', encoding="utf-8") as f:
+				f.write(content)
 		for fname, dp in docpages.items():
 			dp.build_parents()
+			print("dumping", fname)
+			docset.add_to_docset(dp)
 			render = tpl.render(vars(dp))
 			dump(render, os.path.basename(fname))

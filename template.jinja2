@@ -45,7 +45,10 @@
 	<h2>Signals</h2>
 	{% for signal in signals -%}
 		<li>
-			<strong>{{signal.name}}</strong> ( {% call _j_print_args(signal.arguments) %} {% endcall %} )
+			<a name="//apple_ref/cpp/Subroutine/{{signal.name}}" class="dashAnchor">
+				<strong>{{signal.name}}</strong>
+			</a>
+			( {% call _j_print_args(signal.arguments) %} {% endcall %} )
 		</li>	
 	{%- endfor %}
 	{% endif %}
@@ -89,7 +92,9 @@
 			{% else %}
 				<a href="{{method.return}}.hmtl">{{method.return}}</a>
 			{% endif %}
-			<strong id="m_{{method.name}}_{{method.cnt}}">{{method.name}}</strong> ( {% call _j_print_args(method.arguments) %}{% endcall %} ) :<br/>
+			<a name="//apple_ref/cpp/Method/{{method.name}}" class="dashAnchor">
+				<strong id="m_{{method.name}}_{{method.cnt}}">{{method.name}}</strong>
+			</a> ( {% call _j_print_args(method.arguments) %}{% endcall %} ) :<br/>
 			{{method.description}}
 		</li>
 		{%- endfor %}
