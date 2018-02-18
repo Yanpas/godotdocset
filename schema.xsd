@@ -1,0 +1,109 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="class" type="classType"/>
+	<xs:complexType name="returnType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute type="xs:string" name="type" use="optional"/>
+				<xs:attribute type="xs:string" name="enum" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="argumentType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute type="xs:byte" name="index" use="optional"/>
+				<xs:attribute type="xs:string" name="name" use="optional"/>
+				<xs:attribute type="xs:string" name="type" use="optional"/>
+				<xs:attribute type="xs:string" name="default" use="optional"/>
+				<xs:attribute type="xs:string" name="enum" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="methodType">
+		<xs:sequence>
+			<xs:element type="returnType" name="return" minOccurs="0"/>
+			<xs:element type="argumentType" name="argument" maxOccurs="unbounded" minOccurs="0"/>
+			<xs:element type="xs:string" name="description"/>
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="name" use="optional"/>
+		<xs:attribute type="xs:string" name="qualifiers" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="methodsType">
+		<xs:sequence>
+			<xs:element type="methodType" name="method" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="memberType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute type="xs:string" name="name" use="optional"/>
+				<xs:attribute type="xs:string" name="type" use="optional"/>
+				<xs:attribute type="xs:string" name="setter" use="optional"/>
+				<xs:attribute type="xs:string" name="getter" use="optional"/>
+				<xs:attribute type="xs:string" name="enum" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="membersType">
+		<xs:sequence>
+			<xs:element type="memberType" name="member" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="signalType">
+		<xs:sequence>
+			<xs:element type="argumentType" name="argument" maxOccurs="unbounded" minOccurs="0"/>
+			<xs:element type="xs:string" name="description"/>
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="name" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="signalsType">
+		<xs:sequence>
+			<xs:element type="signalType" name="signal" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="constantType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute type="xs:string" name="name" use="optional"/>
+				<xs:attribute type="xs:string" name="value" use="optional"/>
+				<xs:attribute type="xs:string" name="enum" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="constantsType">
+		<xs:sequence>
+			<xs:element type="constantType" name="constant" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="theme_itemType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute type="xs:string" name="name" use="optional"/>
+				<xs:attribute type="xs:string" name="type" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="theme_itemsType">
+		<xs:sequence>
+			<xs:element type="theme_itemType" name="theme_item" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="classType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="brief_description"/>
+			<xs:element type="xs:string" name="description"/>
+			<xs:element type="xs:string" name="tutorials" minOccurs="0"/>
+			<xs:element type="xs:string" name="demos" minOccurs="0"/>
+			<xs:element type="methodsType" name="methods" minOccurs="0"/>
+			<xs:element type="membersType" name="members" minOccurs="0"/>
+			<xs:element type="signalsType" name="signals" minOccurs="0"/>
+			<xs:element type="constantsType" name="constants" minOccurs="0"/>
+			<xs:element type="theme_itemsType" name="theme_items" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="name"/>
+		<xs:attribute type="xs:string" name="inherits"/>
+		<xs:attribute type="xs:string" name="category"/>
+		<xs:attribute type="xs:string" name="version"/>
+	</xs:complexType>
+</xs:schema>
