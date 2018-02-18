@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge"> -->
+	<title>{{title}}</title>
+	<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+</head>
+<body>
+	<h1>{{title}}</h1>
+	<p>
+		<strong>Inherits:</strong>
+		{% for item in inherits -%}
+			<a href="{{item}}.hmtl">{{item}}</a>
+			{% if not loop.last %}
+				&nbsp;&lt;&nbsp;
+			{% endif %}
+		{%- endfor %}
+	</p>
+	<p><strong>Category:</strong> {{category}}</p>
+	<h2>Brief Description</h2>
+	<p>{{brief_description}}</p>
+	<h2>Description</h2>
+	<p>{{description}}</p>
+	{% if methods %}
+	<h2>Member Functions</h2>
+	<table border="1">
+	<tbody class="methods">
+		{% for method in methods -%}
+		<tr>
+			<td>
+			{% if method.return == "void" %}
+				{{method.return}}
+			{% else %}
+				<a href="{{method.return}}.hmtl">{{method.return}}</a>
+			{% endif %}
+			</td>
+			<td>{% call _j_print_method(method) %} {% endcall %}</td>
+		</tr>
+			
+		{%- endfor %}
+	</tbody>
+	</table>
+	{% endif %}
+	{% if methods %}
+	<h2>Signals</h2>
+	{% endif %}
+</body>
+</html>
