@@ -11,8 +11,8 @@
 	<h1>{{title}}</h1>
 	<p>
 		<strong>Inherits:</strong>
-		{% for item in inherits -%}
-			<a href="{{item}}.hmtl">{{item}}</a>
+		{% for parent in parents -%}
+			<a href="{{item}}.hmtl">{{parent}}</a>
 			{% if not loop.last %}
 				&nbsp;&lt;&nbsp;
 			{% endif %}
@@ -21,8 +21,6 @@
 	<p><strong>Category:</strong> {{category}}</p>
 	<h2>Brief Description</h2>
 	<p>{{brief_description}}</p>
-	<h2>Description</h2>
-	<p>{{description}}</p>
 	{% if methods %}
 	<h2>Member Functions</h2>
 	<table border="1">
@@ -36,15 +34,65 @@
 				<a href="{{method.return}}.hmtl">{{method.return}}</a>
 			{% endif %}
 			</td>
-			<td>{% call _j_print_method(method) %} {% endcall %}</td>
+			<td><a href="#m_{{method.name}}_{{method.cnt}}" class="method_link">{{method.name}}</a> ( {% call _j_print_args(method.arguments) %}{% endcall %} )</td>
 		</tr>
 			
 		{%- endfor %}
 	</tbody>
 	</table>
 	{% endif %}
-	{% if methods %}
+	{% if signals %}
 	<h2>Signals</h2>
+	{% for signal in signals -%}
+		<li>
+			<strong>{{signal.name}}</strong> ( {% call _j_print_args(signal.arguments) %} {% endcall %} )
+		</li>	
+	{%- endfor %}
+	{% endif %}
+	{% if fields %}
+	<h2>Member Variables</h2>
+	{% for field in fields -%}
+		<li>
+			{{field.type}} <strong>{{field.name}}</strong>: {{field.description}}
+		</li>	
+	{%- endfor %}
+	{% endif %}
+	{% if None in consts %}
+	<h2>Numeric Constants</h2>
+		{% for const in consts[None] -%}
+		<li>
+			<strong>{{const.name}} = {{const.value}}</strong>: {{const.description}}
+		</li>
+		{%- endfor %}
+	{% endif %}
+	{% if (None in consts and consts|length > 1) or consts %}
+	<h2>Enums</h2>
+		{% for enum in consts -%}
+			{% if enum %}
+				<p>enum <strong>{{enum}}</strong></p>
+				{% for const in consts[enum] -%}
+				<li>
+					<strong>{{const.name}} = {{const.value}}</strong>: {{const.description}}
+				</li>
+				{%- endfor %}
+			{% endif %}
+		{%- endfor %}
+	{% endif %}
+	<h2>Description</h2>
+	<p>{{description}}</p>
+	{% if methods %}
+	<h2>Member Function Description</h2>
+		{% for method in methods -%}
+		<li>
+			{% if method.return == "void" %}
+				{{method.return}}
+			{% else %}
+				<a href="{{method.return}}.hmtl">{{method.return}}</a>
+			{% endif %}
+			<strong id="m_{{method.name}}_{{method.cnt}}">{{method.name}}</strong> ( {% call _j_print_args(method.arguments) %}{% endcall %} ) :<br/>
+			{{method.description}}
+		</li>
+		{%- endfor %}
 	{% endif %}
 </body>
 </html>
