@@ -177,7 +177,7 @@ class DocsetMaker:
 		for e in dp.signals:
 			add_entry(e.name, "Subroutine", "s_"+e.name)
 
-if __name__ == '__main__':
+def main():
 	ap = argparse.ArgumentParser()
 	ap.add_argument('-f', '--from', help="folder or xml file", required=True)
 	# ap.add_argument('-t', '--to', help="output folder", default='.')
@@ -209,3 +209,6 @@ if __name__ == '__main__':
 		shutil.copyfile('style.css', os.path.join(docset.docdir, "style.css"))
 		shutil.copyfile("icon.png", os.path.join(docset.rootdir, "icon.png"))
 		shutil.copyfile("icon.png", os.path.join(docset.rootdir, "icon@2.png"))
+
+if __name__ == '__main__':
+	main()
