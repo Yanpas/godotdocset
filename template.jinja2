@@ -12,10 +12,10 @@
 	<p>
 		<strong>Inherits:</strong>
 		{% for parent in parents -%}
-			<a href="{{item}}.hmtl">{{parent}}</a>
-			{% if not loop.last %}
+			<a href="{{parent}}.hmtl">{{parent}}</a>
+			{%- if not loop.last -%}
 				&nbsp;&lt;&nbsp;
-			{% endif %}
+			{%- endif -%}
 		{%- endfor %}
 	</p>
 	<p><strong>Category:</strong> {{category}}</p>
@@ -28,11 +28,11 @@
 		{% for method in methods -%}
 		<tr>
 			<td>
-			{% if method.return == "void" %}
+			{%- if method.return == "void" -%}
 				{{method.return}}
-			{% else %}
+			{%- else -%}
 				<a href="{{method.return}}.hmtl">{{method.return}}</a>
-			{% endif %}
+			{%- endif -%}
 			</td>
 			<td><a href="#m_{{method.name}}_{{method.cnt}}" class="method_link">{{method.name}}</a> ( {% call _j_print_args(method.arguments) %}{% endcall %} )</td>
 		</tr>
@@ -40,64 +40,70 @@
 		{%- endfor %}
 	</tbody>
 	</table>
-	{% endif %}
-	{% if signals %}
+	{%- endif -%}
+	{%- if signals %}
 	<h2>Signals</h2>
 	{% for signal in signals -%}
 		<li>
-			<a name="//apple_ref/cpp/Subroutine/{{signal.name}}" class="dashAnchor">
+			<a name="//apple_ref/Subroutine/{{signal.name}}" class="dashAnchor" id="s_{{signal.name}}">
 				<strong>{{signal.name}}</strong>
 			</a>
-			( {% call _j_print_args(signal.arguments) %} {% endcall %} )
+			( {% call _j_print_args(signal.arguments) %} {% endcall %} ):<br /> {{signal.description}}
 		</li>	
 	{%- endfor %}
-	{% endif %}
-	{% if fields %}
+	{%- endif %}
+	{%- if fields %}
 	<h2>Member Variables</h2>
 	{% for field in fields -%}
 		<li>
-			{{field.type}} <strong>{{field.name}}</strong>: {{field.description}}
+			{{field.type}} <strong id="f_{{field.name}}">
+				<a name="//apple_ref/Field/{{field.name}}" class="dashAnchor">
+					{{field.name}}
+				</a>
+			</strong>:<br /> {{field.description}}
 		</li>	
 	{%- endfor %}
-	{% endif %}
-	{% if None in consts %}
+	{%- endif %}
+	{%- if None in consts -%}
 	<h2>Numeric Constants</h2>
 		{% for const in consts[None] -%}
 		<li>
-			<strong>{{const.name}} = {{const.value}}</strong>: {{const.description}}
+			<strong>{{const.name}} = {{const.value}}</strong>:<br /> {{const.description}}
 		</li>
 		{%- endfor %}
-	{% endif %}
-	{% if (None in consts and consts|length > 1) or consts %}
+	{%- endif -%}
+	{%- if (None in consts and consts|length > 1) or consts %}
 	<h2>Enums</h2>
 		{% for enum in consts -%}
-			{% if enum %}
-				<p>enum <strong>{{enum}}</strong></p>
+			{%- if enum -%}
+				<p>enum <a name="//apple_ref/Enum/{{enum}}" class="dashAnchor"><strong id="e_{{enum}}">{{enum}}</strong></a></p>
 				{% for const in consts[enum] -%}
 				<li>
-					<strong>{{const.name}} = {{const.value}}</strong>: {{const.description}}
+					<a name="//apple_ref/Constant/{{const.name}}" class="dashAnchor">
+						<strong id="c_{{const.name}}">{{const.name}} = {{const.value}}</strong>
+					</a>:<br /> {{const.description}}
 				</li>
 				{%- endfor %}
-			{% endif %}
+			{%- endif -%}
 		{%- endfor %}
-	{% endif %}
+	{%- endif -%}
 	<h2>Description</h2>
 	<p>{{description}}</p>
-	{% if methods %}
+	{%- if methods -%}
 	<h2>Member Function Description</h2>
-		{% for method in methods -%}
+		{%- for method in methods -%}
 		<li>
-			{% if method.return == "void" %}
+			{%- if method.return == "void" -%}
 				{{method.return}}
-			{% else %}
+			{%- else -%}
 				<a href="{{method.return}}.hmtl">{{method.return}}</a>
-			{% endif %}
-			<a name="//apple_ref/cpp/Method/{{method.name}}" class="dashAnchor">
-				<strong id="m_{{method.name}}_{{method.cnt}}">{{method.name}}</strong>
-			</a> ( {% call _j_print_args(method.arguments) %}{% endcall %} ) :<br/>
+			{%- endif -%}
+			<a name="//apple_ref/Method/{{method.name}}" class="dashAnchor" id="m_{{method.name}}_{{method.cnt}}">
+				<strong>{{method.name}}</strong>
+			</a> ( {%- call _j_print_args(method.arguments) -%}{%- endcall -%} ) :<br/>
 			{{method.description}}
 		</li>
-		{%- endfor %}
-	{% endif %}
+		{% endfor %}
+	{%- endif -%}
 </body>
 </html>

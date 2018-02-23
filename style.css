@@ -1,0 +1,24 @@
+body {
+	font-size: large;
+	font-family: sans-serif;
+	background-color: whitesmoke
+}
+
+.tag_codeblock {
+	font-family: monospace;
+	white-space: pre;
+}
+
+a:visited {
+    color: #9B59B6;
+}
+
+a:hover {
+    color: #3091d1;
+}
+
+a {
+    color: #2980B9;
+    text-decoration: none;
+    cursor: pointer
+}
