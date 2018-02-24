@@ -26,11 +26,13 @@ def linkify_text(node: etree.Element) -> str:
 	txt = re.sub(r'\[(\w+?)\](.+?)\[/\1\]', r'<span class="tag_\1">\2</span>', txt) # [code]bla[/code] -> <span>...
 	# TODO generate valid links for methods etc.
 	txt = re.sub(r'\[(\w+?) (\w+?)\]', r'\1 \2', txt) # [method foo] -> method foo
-	txt = re.sub(r'\[(\w+?)\]', r'<a href="\1.html">\1</a>', txt) # [Object] -> <a href="..."
+	txt = re.sub(r'\[([@a-zA-Z_]+?)\]', r'<a href="\1.html">\1</a>', txt) # [Object] -> <a href="..."
 	return txt
 
 def j_print_args(args, **_kwargs):
-	return ", ".join([f'<a href="{a.type}.html">{a.type}</a> {a.name}{"="+a.default if a.default else ""}' for a in args])
+	def get_type(argt):
+		return f'<a href="{argt}.html">{argt}</a>' if argt != "var" else argt
+	return ", ".join([f'{get_type(a.type)} {a.name}{"="+a.default if a.default else ""}' for a in args])
 
 class DocPage:
 	parents = {}
@@ -71,7 +73,7 @@ class DocPage:
 			res = SimpleNamespace()
 			res.cnt = cnt
 			res.name = method.attrib["name"]
-			res.__dict__["return"] = method.find("return").attrib["type"] if method.find("return") else "void"
+			res.__dict__["return"] = (method.find("return").attrib["type"] if method.find("return") is not None else "void")
 			res.description = linkify_text(method.find("description"))
 			res.arguments = []
 			for arg in method.findall("argument"):

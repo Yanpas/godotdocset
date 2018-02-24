@@ -28,7 +28,7 @@
 		{% for method in methods -%}
 		<tr>
 			<td>
-			{%- if method.return == "void" -%}
+			{%- if method.return in ["void", "var"] -%}
 				{{method.return}}
 			{%- else -%}
 				<a href="{{method.return}}.hmtl">{{method.return}}</a>
@@ -93,7 +93,7 @@
 	<h2>Member Function Description</h2>
 		{%- for method in methods -%}
 		<li>
-			{%- if method.return == "void" -%}
+			{%- if method.return in ["void", "var"] -%}
 				{{method.return}}
 			{%- else -%}
 				<a href="{{method.return}}.hmtl">{{method.return}}</a>
