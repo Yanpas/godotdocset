@@ -18,7 +18,6 @@
 			{%- endif -%}
 		{%- endfor %}
 	</p>
-	<p><strong>Category:</strong> {{category}}</p>
 	<h2>Brief Description</h2>
 	<p>{{brief_description}}</p>
 	{% if methods %}
@@ -36,7 +35,7 @@
 			</td>
 			<td><a href="#m_{{method.name}}_{{method.cnt}}" class="method_link">{{method.name}}</a> ( {% call _j_print_args(method.arguments) %}{% endcall %} )</td>
 		</tr>
-			
+
 		{%- endfor %}
 	</tbody>
 	</table>
@@ -49,7 +48,7 @@
 				<strong>{{signal.name}}</strong>
 			</a>
 			( {% call _j_print_args(signal.arguments) %} {% endcall %} ):<br /> {{signal.description}}
-		</li>	
+		</li>
 	{%- endfor %}
 	{%- endif %}
 	{%- if fields %}
@@ -61,7 +60,7 @@
 					{{field.name}}
 				</a>
 			</strong>:<br /> {{field.description}}
-		</li>	
+		</li>
 	{%- endfor %}
 	{%- endif %}
 	{%- if None in consts -%}

@@ -16,5 +16,6 @@ Generating docset:
 1. Go to https://github.com/godotengine/godot/
 2. Get doc/classes directory somehow (clone entire repo)
 3. Run generator `python3 godotdocset.py -f ./classes`
+4. `mv Godot.docset ~/.local/share/Zeal/Zeal/docsets/`
 
 There is Godot.docset.7z file in the project with precompiled docset.
