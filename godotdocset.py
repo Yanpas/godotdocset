@@ -20,7 +20,7 @@ import shutil
 TEMPLATE = "template.jinja2"
 
 def linkify_text(node: etree.Element) -> str:
-	txt = node.text.strip()
+	txt = (node.text or "").strip()
 	txt = txt.replace("\n", "<br />")
 	txt = txt.replace("\t", "")
 	txt = re.sub(r'\[(\w+?)\](.+?)\[/\1\]', r'<span class="tag_\1">\2</span>', txt) # [code]bla[/code] -> <span>...
@@ -43,7 +43,6 @@ class DocPage:
 		self.inherits = root.attrib.get("inherits")
 		self.parents = []
 		DocPage.parents[self.title] = self.inherits
-		self.category = root.attrib["category"]
 		self.brief_description = linkify_text(root.find('brief_description'))
 		self.description = linkify_text(root.find('description'))
 		self.populate_methods()
@@ -95,7 +94,7 @@ class DocPage:
 						type=arg.attrib["type"], default=None))
 			res.arguments.sort(key=lambda el: el.index)
 			self.signals.append(res)
-		
+
 	def populate_fields(self):
 		self.fields = []
 		for field in self._root.findall("members/member"):
@@ -151,11 +150,11 @@ class DocsetMaker:
 			plist.write(get_plist(DocsetMaker.outname))
 		self.db.execute("BEGIN")
 		return self
-	
+
 	def __exit__(self, *oth):
 		self.db.commit()
 		self.db.close()
-	
+
 	def add_to_docset(self, dp: DocPage):
 		def add_entry(name, entrytype, anchor=""):
 			if anchor:
@@ -185,7 +184,7 @@ def main():
 	# ap.add_argument('-t', '--to', help="output folder", default='.')
 	args = ap.parse_args()
 	frompath = args.__dict__['from']
-	
+
 	if not os.path.exists(frompath) or not os.path.isdir(frompath):
 		exit("Directory " + frompath + " doesn't exist or is not a directory")
 	docsetdir = DocsetMaker.outname + ".docset"
