@@ -12,7 +12,7 @@
 	<p>
 		<strong>Inherits:</strong>
 		{% for parent in parents -%}
-			<a href="{{parent}}.hmtl">{{parent}}</a>
+			<a href="{{parent}}.html">{{parent}}</a>
 			{%- if not loop.last -%}
 				&nbsp;&lt;&nbsp;
 			{%- endif -%}
@@ -30,7 +30,7 @@
 			{%- if method.return in ["void", "var"] -%}
 				{{method.return}}
 			{%- else -%}
-				<a href="{{method.return}}.hmtl">{{method.return}}</a>
+				<a href="{{method.return}}.html">{{method.return}}</a>
 			{%- endif -%}
 			</td>
 			<td><a href="#m_{{method.name}}_{{method.cnt}}" class="method_link">{{method.name}}</a> ( {% call _j_print_args(method.arguments) %}{% endcall %} )</td>
@@ -95,7 +95,7 @@
 			{%- if method.return in ["void", "var"] -%}
 				{{method.return}}
 			{%- else -%}
-				<a href="{{method.return}}.hmtl">{{method.return}}</a>
+				<a href="{{method.return}}.html">{{method.return}}</a>
 			{%- endif -%}
 			<a name="//apple_ref/Method/{{method.name}}" class="dashAnchor" id="m_{{method.name}}_{{method.cnt}}">
 				<strong>{{method.name}}</strong>
