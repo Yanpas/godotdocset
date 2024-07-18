@@ -152,17 +152,18 @@ def get_version():
 
 class DocsetMaker:
 	outname = "Godot"
+	v_outname = outname+get_version()
 	# version_path = os.path.abspath(os.path.join("../", frompath, "./version.py"))
-	rootdir = outname + '.docset'
+	rootdir = outname + get_version() + '.docset'
 	docdir = rootdir + '/Contents/Resources/Documents'
 
 	def __enter__(self):
 		os.makedirs(self.docdir)
-		self.db = sqlite3.connect(DocsetMaker.outname + '.docset/Contents/Resources/docSet.dsidx')
+		self.db = sqlite3.connect(DocsetMaker.v_outname + '.docset/Contents/Resources/docSet.dsidx')
 		self.db.execute('CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT);')
 		self.db.execute('CREATE UNIQUE INDEX anchor ON searchIndex (name, type, path);')
-		with open(DocsetMaker.outname + '.docset/Contents/Info.plist', 'w') as plist:
-			plist.write(get_plist(DocsetMaker.outname, get_version()))
+		with open(DocsetMaker.v_outname + '.docset/Contents/Info.plist', 'w') as plist:
+			plist.write(get_plist(DocsetMaker.v_outname, get_version()))
 		self.db.execute("BEGIN")
 		return self
 
