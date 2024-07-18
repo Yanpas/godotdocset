@@ -163,7 +163,7 @@ class DocsetMaker:
 		self.db.execute('CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT);')
 		self.db.execute('CREATE UNIQUE INDEX anchor ON searchIndex (name, type, path);')
 		with open(DocsetMaker.v_outname + '.docset/Contents/Info.plist', 'w') as plist:
-			plist.write(get_plist(DocsetMaker.v_outname, get_version()))
+			plist.write(get_plist(DocsetMaker.outname, get_version()))
 		self.db.execute("BEGIN")
 		return self
 
