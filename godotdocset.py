@@ -151,7 +151,7 @@ def get_version():
 	return version
 
 class DocsetMaker:
-	outname = "Godot"+get_version()
+	outname = "Godot"
 	# version_path = os.path.abspath(os.path.join("../", frompath, "./version.py"))
 	rootdir = outname + '.docset'
 	docdir = rootdir + '/Contents/Resources/Documents'
@@ -198,7 +198,7 @@ def main():
 
 	if not os.path.exists(frompath) or not os.path.isdir(frompath):
 		exit("Directory " + frompath + " doesn't exist or is not a directory")
-	docsetdir = DocsetMaker.outname + ".docset"
+	docsetdir = DocsetMaker.outname + get_version() + ".docset"
 	if os.path.exists(docsetdir):
 		print("Removing docset dir")
 		shutil.rmtree(docsetdir)
