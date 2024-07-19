@@ -199,7 +199,7 @@ class DocsetMaker:
 def main():
 	if not os.path.exists(FROM_PATH) or not os.path.isdir(FROM_PATH):
 		exit("Directory " + FROM_PATH + " doesn't exist or is not a directory")
-	docsetdir = DocsetMaker.outname + VERSION + ".docset"
+	docsetdir = DocsetMaker.v_outname + ".docset"
 	if os.path.exists(docsetdir):
 		print("Removing docset dir")
 		shutil.rmtree(docsetdir)
