@@ -18,6 +18,26 @@ import sqlite3
 import shutil
 
 TEMPLATE = "template.jinja2"
+VERSION = ""
+FROM_PATH = ""
+
+def set_glob_args_from():
+	global FROM_PATH
+	ap = argparse.ArgumentParser()
+	ap.add_argument('-f', '--from', help="folder or xml file", required=True)
+	# ap.add_argument('-t', '--to', help="output folder", default='.')
+	args = ap.parse_args()
+	FROM_PATH = args.__dict__['from']
+
+def set_glob_version():
+	global VERSION
+	VERSION_PATH = os.path.abspath(os.path.join(FROM_PATH, "../../version.py"))
+	for line in open(VERSION_PATH):
+		if line.startswith("docs ="):
+			VERSION = "-"+line.split("=")[1].strip().strip('\"')
+
+set_glob_args_from()
+set_glob_version()
 
 def linkify_text(node: etree.Element) -> str:
 	txt = (node.text or "").strip()
@@ -114,7 +134,7 @@ class DocPage:
 			res.description = linkify_text(const)
 			self.consts[ename].append(res)
 
-def get_plist(name: str):
+def get_plist(name: str, version: str):
 	return '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -131,23 +151,21 @@ def get_plist(name: str):
 	<string>dashtoc</string>
 </dict>
 </plist>
-'''.format(name.split('_')[0],
-		name.replace('_', ' '),
-		name.split('_')[0].lower())
-
+'''.format(name.split('_')[0]+version, name.replace('_', ' ')+version, name.split('_')[0].lower())
 
 class DocsetMaker:
 	outname = "Godot"
-	rootdir = outname + '.docset'
+	v_outname = outname+VERSION
+	rootdir = v_outname + '.docset'
 	docdir = rootdir + '/Contents/Resources/Documents'
 
 	def __enter__(self):
 		os.makedirs(self.docdir)
-		self.db = sqlite3.connect(DocsetMaker.outname + '.docset/Contents/Resources/docSet.dsidx')
+		self.db = sqlite3.connect(DocsetMaker.v_outname + '.docset/Contents/Resources/docSet.dsidx')
 		self.db.execute('CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT);')
 		self.db.execute('CREATE UNIQUE INDEX anchor ON searchIndex (name, type, path);')
-		with open(DocsetMaker.outname + '.docset/Contents/Info.plist', 'w') as plist:
-			plist.write(get_plist(DocsetMaker.outname))
+		with open(DocsetMaker.v_outname + '.docset/Contents/Info.plist', 'w') as plist:
+			plist.write(get_plist(DocsetMaker.outname, VERSION))
 		self.db.execute("BEGIN")
 		return self
 
@@ -179,20 +197,14 @@ class DocsetMaker:
 			add_entry(e.name, "Subroutine", "s_"+e.name)
 
 def main():
-	ap = argparse.ArgumentParser()
-	ap.add_argument('-f', '--from', help="folder or xml file", required=True)
-	# ap.add_argument('-t', '--to', help="output folder", default='.')
-	args = ap.parse_args()
-	frompath = args.__dict__['from']
-
-	if not os.path.exists(frompath) or not os.path.isdir(frompath):
-		exit("Directory " + frompath + " doesn't exist or is not a directory")
-	docsetdir = DocsetMaker.outname + ".docset"
+	if not os.path.exists(FROM_PATH) or not os.path.isdir(FROM_PATH):
+		exit("Directory " + FROM_PATH + " doesn't exist or is not a directory")
+	docsetdir = DocsetMaker.v_outname + ".docset"
 	if os.path.exists(docsetdir):
 		print("Removing docset dir")
 		shutil.rmtree(docsetdir)
 	docpages = {}
-	for fname in glob(frompath + "/*.xml"):
+	for fname in glob(FROM_PATH + "/*.xml"):
 		doc = etree.parse(fname)
 		print("parsing", fname)
 		docpages[fname] = DocPage(doc.getroot())
